@@ -18,7 +18,7 @@ There is one .csv file per category, and the book images are downloaded and stor
 
 Start by installing Python. Then launch the console, move to the folder of your choice and clone the repository:
 
-- git clone https://github.com/
+- git clone https://github.com/mouquettom/OC_P2_BooksToScrape/tree/master
 
 Go to the OC_P2_BooksToScrape folder, then create a new virtual environment:
 
