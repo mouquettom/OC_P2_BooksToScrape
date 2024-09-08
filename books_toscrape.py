@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 import re
 import os
 import csv
+import pathlib
 
 
 user_agent = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) "
@@ -26,7 +27,7 @@ def get_categories_urls():
         except requests.exceptions.RequestException as e:
             logger.error(f"Erreur lors de la requête HTTP {BASE_URL} : {e}")
 
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response.content, "html.parser")
 
         categories = soup.find("ul", class_="nav nav-list").find("ul").find_all("a")
         categories_urls = [category["href"] for category in categories]
@@ -184,6 +185,11 @@ def main():
 
 def write_csv(data_books):
 
+    root_path = pathlib.Path(__file__).parent.resolve()
+    path = pathlib.Path(root_path / "data")
+
+    path.mkdir(parents=True, exist_ok=True)
+
     category = ""
     csvfile = None
     writer = None
@@ -198,7 +204,9 @@ def write_csv(data_books):
             if csvfile is not None:
                 csvfile.close()
 
-            csvfile = open(category + '.csv', 'w', newline="", encoding="utf-8")
+            filename = category + ".csv"
+
+            csvfile = open(path / filename, 'w', newline="", encoding="utf-8")
 
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -211,28 +219,18 @@ def write_csv(data_books):
 
 def downlaod_images(data_books):
 
-    '''
-    path = '/Users/tommouquet/Desktop/PYTHON/EXAMENS/OC_P2_BooksToScrape'
+    root_path = pathlib.Path(__file__).parent.resolve()
+    path = pathlib.Path(root_path / "images")
 
-    dossier = os.path.join(path, "Images")
-    if not os.path.exists(dossier):
-        os.makedirs(dossier)
-    '''
-
-    path = '/Users/tommouquet/Desktop/PYTHON/EXAMENS/OC_P2_BooksToScrape/Images'
-
-    try:
-        os.mkdir(path)
-    except OSError as e:
-        logger.error(f"Erreur dossier : {e}")
+    path.mkdir(parents=True, exist_ok=True)
 
     for book in data_books:
         response = requests.get(book["Image"])
 
         if response.ok:
-            filename = path + '/' + book["Image"].split('/')[-1]
+            filename = book["Image"].split('/')[-1]
 
-            with open(filename, "wb") as file:
+            with open(path / filename, "wb") as file:
                 file.write(response.content)
 
 
