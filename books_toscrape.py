@@ -3,7 +3,6 @@ import requests
 from loguru import logger
 from urllib.parse import urljoin
 import re
-import os
 import csv
 import pathlib
 
